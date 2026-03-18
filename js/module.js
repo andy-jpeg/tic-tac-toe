@@ -4,8 +4,10 @@ const GameController = (function () {
         this.symbol = symbol
     }
 
-    const player1 = new Player('burg', 'X')
-    const player2 = new Player('chicen', 'O')
+    let player1 = null
+    let player2 = null
+
+    let formData = null
 
     const winningCombos = [
         [0, 1, 2],
@@ -18,18 +20,66 @@ const GameController = (function () {
         [2, 4, 6],
     ]
 
-    let currentPlayer = player1
+    let currentPlayer = null
+
+    const display = document.querySelector('#display')
+    const restart = document.querySelector('#restart')
+
+    const form = document.querySelector('.form')
+    form.addEventListener('submit', function (event) {
+        event.preventDefault()
+
+        const playerNames = new FormData(form)
+        formData = playerNames // store previous names when restarting game
+
+        const name1 = playerNames.get('player1')
+        const name2 = playerNames.get('player2')
+
+        if (!player1 && !player2) {
+            player1 = new Player(name1, 'X')
+            player2 = new Player(name2, 'O')
+
+            currentPlayer = player1
+        }
+
+        form.style.display = 'none'
+        display.textContent = currentPlayer.name + "'s turn!"
+    })
 
     const tileList = document.querySelectorAll('.tile')
     tileList.forEach((button) => {
         button.addEventListener('click', function () {
-            if (button.textContent == '') {
+            if (button.textContent == '' && player1 && player2) {
                 button.textContent = currentPlayer.symbol
 
                 changeTurn()
                 checkPatterns()
             }
         })
+    })
+
+    function restartBoard() {
+        tileList.forEach((button) => {
+            button.textContent = ''
+        })
+    }
+
+    restart.addEventListener('click', function () {
+        if (!player1 && !player2) {
+            // prevent unnecessary restarts
+            const name1 = formData.get('player1')
+            const name2 = formData.get('player2')
+
+            player1 = new Player(name1, 'X')
+            player2 = new Player(name2, 'O')
+
+            currentPlayer = player1
+
+            restartBoard()
+            restart.style.visibility = 'hidden'
+
+            display.textContent = currentPlayer.name + "'s turn!"
+        }
     })
 
     function retrieveValues() {
@@ -49,12 +99,19 @@ const GameController = (function () {
             currentPlayer = player1
         }
 
-        console.log(currentPlayer.name + "'s turn!!")
+        display.textContent = currentPlayer.name + "'s turn!"
+    }
+
+    function findPlayer(symbol) {
+        if (player1.symbol == symbol) {
+            return player1
+        } else if (player2.symbol == symbol) {
+            return player2
+        }
     }
 
     function checkPatterns() {
-        console.log('checking if anyone won....')
-        let winningCombo = null
+        let winningPlayer = null
         const values = retrieveValues()
         console.log(values)
 
@@ -82,19 +139,41 @@ const GameController = (function () {
             }
 
             if (dominatingValue) {
-                winningCombo = combo
-                console.log(winningCombo)
+                winningPlayer = dominatingValue
                 break
             }
         }
 
-        if (winningCombo) {
-            console.log('Bro someone won')
+        if (winningPlayer) {
+            winningPlayer = findPlayer(winningPlayer)
+            display.textContent = winningPlayer.name + ' won!!'
+
+            // prevent extra tile changes!
+
+            player1 = null
+            player2 = null
+
+            restart.style.visibility = 'visible'
         } else {
-            console.log('No wins JUST yet....')
+            // check for full board!
+            let isFull = true
+
+            for (const value of values) {
+                if (value == '') {
+                    isFull = false
+                }
+            }
+
+            if (isFull) {
+                display.textContent = "It's a draw.."
+
+                // prevent extra tile changes!
+
+                player1 = null
+                player2 = null
+
+                restart.style.visibility = 'visible'
+            }
         }
     }
-
-    console.log('game controller start!')
-    console.log(player1.name + ' goes first!')
 })()

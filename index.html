@@ -62,5 +62,59 @@
                 id="9"
             ></div>
         </div>
+
+        <!-- Player Menu -->
+
+        <form class="form">
+            <div class="mt-10 flex justify-center gap-16">
+                <div class="flex flex-col">
+                    <label>Player 1's Name (X)</label>
+                    <input
+                        class="rounded-md border-2"
+                        type="text"
+                        id="player1"
+                        name="player1"
+                        placeholder="Name"
+                        required
+                    />
+                </div>
+
+                <div class="flex flex-col">
+                    <label>Player 2's Name (O)</label>
+                    <input
+                        class="rounded-md border-2"
+                        type="text"
+                        id="player2"
+                        name="player2"
+                        placeholder="Name"
+                        required
+                    />
+                </div>
+            </div>
+
+            <button
+                class="mx-auto mt-10 flex rounded-xl border-2 px-10 py-2"
+                type="submit"
+                id="start"
+            >
+                Start
+            </button>
+        </form>
+
+        <!-- Restart Button -->
+
+        <button
+            class="invisible mx-auto mt-10 flex rounded-xl border-2 px-10 py-2"
+            id="restart"
+        >
+            Restart
+        </button>
+
+        <!-- Results & Game Commands Display -->
+
+        <div
+            class="mx-auto mt-4 mb-4 flex justify-center text-3xl"
+            id="display"
+        ></div>
     </body>
 </html>
